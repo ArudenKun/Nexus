@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "name": "my-app",
+  "private": true,
+  "dependencies": {
+    "@abp/aspnetcore.components.server.basictheme": "~10.6.1",
+    "@abp/aspnetcore.mvc.ui.theme.basic": "~10.6.1",
+    "bootstrap-icons": "^1.13.1"
+  },
+  "resolutions": {
+    "jquery": "3.7.1"
+  }
+}

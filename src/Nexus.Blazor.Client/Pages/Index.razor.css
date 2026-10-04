@@ -1,0 +1,17 @@
+.getting-started-page ::deep .getting-started-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-top: auto;
+}
+
+/* The MudBlazor theme collapses the grid's vertical gutter (padding-top) to 8px
+   while the horizontal gutter stays 24px, so stacked cards sit tighter than the
+   columns. Restore a uniform 24px rhythm to match the MVC/Blazorise layout. */
+.getting-started-page ::deep .mud-grid-spacing-xs-6 > .mud-grid-item {
+    padding-top: 24px !important;
+}
+
+.getting-started-page ::deep .mud-grid.mud-grid-spacing-xs-6 {
+    margin-top: -24px;
+}

@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+  <Import Project="..\..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazor.LocalStorage" Version="10.1.0" />
+    <PackageReference Include="Blazor.SessionStorage" Version="10.1.0" />
+    <PackageReference Include="MudBlazor" Version="9.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.9" />
+    <PackageReference
+      Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+      Version="10.0.9"
+    />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Autofac.WebAssembly" Version="10.6.1" />
+    <PackageReference
+      Include="Volo.Abp.SettingManagement.Blazor.MudBlazor.WebAssembly"
+      Version="10.6.1"
+    />
+    <PackageReference
+      Include="Volo.Abp.FeatureManagement.Blazor.MudBlazor.WebAssembly"
+      Version="10.6.1"
+    />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference
+      Include="Volo.Abp.AspNetCore.Components.WebAssembly.MudBlazorBasicTheme"
+      Version="10.6.1"
+    />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Identity.Blazor.MudBlazor.WebAssembly" Version="10.6.1" />
+    <PackageReference
+      Include="Volo.Abp.TenantManagement.Blazor.MudBlazor.WebAssembly"
+      Version="10.6.1"
+    />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Nexus.HttpApi.Client\Nexus.HttpApi.Client.csproj" />
+  </ItemGroup>
+</Project>

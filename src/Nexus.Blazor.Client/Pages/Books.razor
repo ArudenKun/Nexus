@@ -1,0 +1,302 @@
+@page "/books"
+@attribute [Authorize(NexusPermissions.Books.Default)]
+@using System.Threading
+@using Nexus.Permissions
+@using Volo.Abp.Application.Dtos
+@using Nexus.Authors
+@using Nexus.Books
+@inject IBookAppService BookAppService
+@inject IAuthorAppService AuthorAppService
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inherits NexusComponentBase
+<MudCard>
+    <MudCardContent>
+        <MudGrid Class="mb-3 align-center">
+            <MudItem xs="12" lg="8">
+                <MudText Typo="Typo.h6">@L["Books"]</MudText>
+            </MudItem>
+            <MudItem xs="12" lg="4" Class="d-flex justify-end gap-2">
+                <MudButton Variant="Variant.Outlined" Color="Color.Secondary"
+                           StartIcon="@Icons.Material.Filled.Download"
+                           OnClick="ExportBooksAsync">@L["ExportToExcel"]</MudButton>
+                @if (HasCreatePermission)
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Add"
+                               OnClick="OpenCreateDialogAsync">
+                        @L["NewBook"]
+                    </MudButton>
+                }
+            </MudItem>
+        </MudGrid>
+        <MudDataGrid @ref="_dataGrid"
+                     T="BookDto"
+                     ServerData="OnDataGridReadAsync"
+                     RowsPerPage="@PageSize"
+                     SortMode="SortMode.None">
+            <Columns>
+                <TemplateColumn Title="@L["Actions"]" Sortable="false">
+                    <CellTemplate>
+                        <MudMenu Icon="@Icons.Material.Filled.MoreVert" Variant="Variant.Text" Dense="true">
+                            @if (HasUpdatePermission)
+                            {
+                                <MudMenuItem Icon="@Icons.Material.Filled.Edit"
+                                             OnClick="@(() => OpenEditDialogAsync(context.Item))">
+                                    @L["Edit"]
+                                </MudMenuItem>
+                            }
+                            @if (HasDeletePermission)
+                            {
+                                <MudMenuItem Icon="@Icons.Material.Filled.Delete"
+                                             OnClick="@(() => DeleteEntityAsync(context.Item))">
+                                    @L["Delete"]
+                                </MudMenuItem>
+                            }
+                        </MudMenu>
+                    </CellTemplate>
+                </TemplateColumn>
+                <PropertyColumn Property="x => x.Name" Title="@L["Name"]"/>
+                <PropertyColumn Property="x => x.AuthorName" Title="@L["AuthorName"]"/>
+                <TemplateColumn Title="@L["Type"]">
+                    <CellTemplate>
+                        @L[$"Enum:BookType.{(int)context.Item.Type}"]
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn Title="@L["PublishDate"]">
+                    <CellTemplate>
+                        @context.Item.PublishDate.ToShortDateString()
+                    </CellTemplate>
+                </TemplateColumn>
+                <PropertyColumn Property="x => x.Price" Title="@L["Price"]"/>
+                <TemplateColumn Title="@L["CreationTime"]">
+                    <CellTemplate>
+                        @context.Item.CreationTime.ToLongDateString()
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="BookDto"/>
+            </PagerContent>
+        </MudDataGrid>
+    </MudCardContent>
+</MudCard>
+<MudDialog @bind-Visible="_createDialogVisible" Options="DialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@L["NewBook"]</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_createForm" Model="@NewEntity">
+            <MudTextField @bind-Value="NewEntity.Name" Label="@L["Name"]" AutoFocus="true" Immediate="true"
+                          OnlyValidateIfDirty="true"
+                          Margin="Margin.Dense" Required="true"
+                          RequiredError="@L["The {0} field is required.", L["Name"]]"/>
+            <MudSelect T="Guid" @bind-Value="NewEntity.AuthorId" Label="@L["Author"]" Margin="Margin.Dense"
+                       ToStringFunc="@(authorId => Authors.FirstOrDefault(x => x.Id == authorId)?.Name ?? string.Empty)">
+                @foreach (var author in Authors)
+                {
+                    <MudSelectItem T="Guid" Value="@author.Id">@author.Name</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect T="BookType" @bind-Value="NewEntity.Type" Label="@L["Type"]" Margin="Margin.Dense">
+                @foreach (BookType bookType in Enum.GetValues(typeof(BookType)))
+                {
+                    <MudSelectItem T="BookType" Value="@bookType">@L[$"Enum:BookType.{(int)bookType}"]</MudSelectItem>
+                }
+            </MudSelect>
+            <MudDatePicker @bind-Date="_newEntityPublishDate" Label="@L["PublishDate"]" Margin="Margin.Dense"/>
+            <MudNumericField T="float" @bind-Value="NewEntity.Price" Label="@L["Price"]" Margin="Margin.Dense"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseCreateDialog">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateEntityAsync">@L["Save"]</MudButton>
+    </DialogActions>
+</MudDialog>
+<MudDialog @bind-Visible="_editDialogVisible" Options="DialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">@L["Edit"]</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_editForm" Model="@EditingEntity">
+            <MudTextField @bind-Value="EditingEntity.Name" Label="@L["Name"]"
+                          Margin="Margin.Dense" Required="true"
+                          RequiredError="@L["The {0} field is required.", L["Name"]]"/>
+            <MudSelect T="Guid" @bind-Value="EditingEntity.AuthorId" Label="@L["Author"]" Margin="Margin.Dense"
+                       ToStringFunc="@(authorId => Authors.FirstOrDefault(x => x.Id == authorId)?.Name ?? string.Empty)">
+                @foreach (var author in Authors)
+                {
+                    <MudSelectItem T="Guid" Value="@author.Id">@author.Name</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect T="BookType" @bind-Value="EditingEntity.Type" Label="@L["Type"]" Margin="Margin.Dense">
+                @foreach (BookType bookType in Enum.GetValues(typeof(BookType)))
+                {
+                    <MudSelectItem T="BookType" Value="@bookType">@L[$"Enum:BookType.{(int)bookType}"]</MudSelectItem>
+                }
+            </MudSelect>
+            <MudDatePicker @bind-Date="_editingEntityPublishDate" Label="@L["PublishDate"]" Margin="Margin.Dense"/>
+            <MudNumericField T="float" @bind-Value="EditingEntity.Price" Label="@L["Price"]" Margin="Margin.Dense"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseEditDialog">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="UpdateEntityAsync">@L["Save"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code
+{
+    private MudDataGrid<BookDto> _dataGrid = null!;
+    private MudForm? _createForm;
+    private MudForm? _editForm;
+    private bool _createDialogVisible;
+    private bool _editDialogVisible;
+    private DateTime? _newEntityPublishDate;
+    private DateTime? _editingEntityPublishDate;
+    private const int PageSize = 10;
+    private CreateUpdateBookDto NewEntity { get; set; } = new();
+    private CreateUpdateBookDto EditingEntity { get; set; } = new();
+    private IReadOnlyList<AuthorDto> Authors { get; set; } = [];
+    private Guid EditingEntityId { get; set; }
+    private bool HasCreatePermission { get; set; }
+    private bool HasUpdatePermission { get; set; }
+    private bool HasDeletePermission { get; set; }
+
+    private DialogOptions DialogOptions => new()
+    {
+        MaxWidth = MaxWidth.Medium,
+        FullWidth = true,
+        CloseOnEscapeKey = true,
+        BackdropClick = false
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        HasCreatePermission = (await AuthorizationService.AuthorizeAsync(NexusPermissions.Books.Create)).Succeeded;
+        HasUpdatePermission = (await AuthorizationService.AuthorizeAsync(NexusPermissions.Books.Edit)).Succeeded;
+        HasDeletePermission = (await AuthorizationService.AuthorizeAsync(NexusPermissions.Books.Delete)).Succeeded;
+        var authors = await AuthorAppService.GetListAsync(new PagedAndSortedResultRequestDto { MaxResultCount = 1000, Sorting = nameof(AuthorDto.Name) });
+        Authors = authors.Items;
+    }
+
+    private async Task<GridData<BookDto>> OnDataGridReadAsync(GridState<BookDto> state, CancellationToken cancellationToken = default)
+    {
+        var result = await BookAppService.GetListAsync(new PagedAndSortedResultRequestDto
+        {
+            MaxResultCount = state.PageSize,
+            SkipCount = state.Page * state.PageSize
+        });
+        return new GridData<BookDto>
+        {
+            Items = result.Items,
+            TotalItems = (int)result.TotalCount
+        };
+    }
+
+    private Task OpenCreateDialogAsync()
+    {
+        NewEntity = new CreateUpdateBookDto
+        {
+            PublishDate = DateTime.Now,
+            AuthorId = Authors.FirstOrDefault()?.Id ?? Guid.Empty
+        };
+        _newEntityPublishDate = NewEntity.PublishDate;
+        _createDialogVisible = true;
+        return Task.CompletedTask;
+    }
+
+    private void CloseCreateDialog()
+    {
+        _createDialogVisible = false;
+    }
+
+    private async Task CreateEntityAsync()
+    {
+        if (_createForm != null)
+        {
+            await _createForm.ValidateAsync();
+            if (!_createForm.IsValid)
+            {
+                return;
+            }
+        }
+
+        if (_newEntityPublishDate.HasValue)
+        {
+            NewEntity.PublishDate = _newEntityPublishDate.Value;
+        }
+
+        await BookAppService.CreateAsync(NewEntity);
+        _createDialogVisible = false;
+        await InvokeAsync(() => _dataGrid.ReloadServerData());
+        Snackbar.Add(L["SuccessfullySaved"], Severity.Success);
+    }
+
+    private Task OpenEditDialogAsync(BookDto entity)
+    {
+        EditingEntityId = entity.Id;
+        EditingEntity = new CreateUpdateBookDto
+        {
+            Name = entity.Name,
+            AuthorId = entity.AuthorId,
+            Type = entity.Type,
+            PublishDate = entity.PublishDate,
+            Price = entity.Price
+        };
+        _editingEntityPublishDate = EditingEntity.PublishDate;
+        _editDialogVisible = true;
+        return Task.CompletedTask;
+    }
+
+    private void CloseEditDialog()
+    {
+        _editDialogVisible = false;
+    }
+
+    private async Task UpdateEntityAsync()
+    {
+        if (_editForm != null)
+        {
+            await _editForm.ValidateAsync();
+            if (!_editForm.IsValid)
+            {
+                return;
+            }
+        }
+
+        if (_editingEntityPublishDate.HasValue)
+        {
+            EditingEntity.PublishDate = _editingEntityPublishDate.Value;
+        }
+
+        await BookAppService.UpdateAsync(EditingEntityId, EditingEntity);
+        _editDialogVisible = false;
+        await InvokeAsync(() => _dataGrid.ReloadServerData());
+        Snackbar.Add(L["SuccessfullySaved"], Severity.Success);
+    }
+
+    private async Task ExportBooksAsync()
+    {
+        var token = await BookAppService.GetDownloadTokenAsync();
+        NavigationManager.NavigateTo($"/api/app/book/as-excel-file?downloadToken={Uri.EscapeDataString(token.Token)}", forceLoad: true);
+    }
+
+    private async Task DeleteEntityAsync(BookDto entity)
+    {
+        var confirmed = await DialogService.ShowMessageBoxAsync(
+            L["AreYouSure"],
+            string.Format(L["AreYouSureToDelete"], entity.Name),
+            yesText: L["Yes"], cancelText: L["Cancel"]);
+        if (confirmed != true)
+        {
+            return;
+        }
+
+        await BookAppService.DeleteAsync(entity.Id);
+        await InvokeAsync(() => _dataGrid.ReloadServerData());
+        Snackbar.Add(L["SuccessfullyDeleted"], Severity.Success);
+    }
+}

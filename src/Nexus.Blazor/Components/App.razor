@@ -1,0 +1,89 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Hosting
+@using Volo.Abp.AspNetCore.Components.Server.MudBlazorBasicTheme.Bundling
+@using Volo.Abp.Localization
+@using Volo.Abp.AspNetCore.Components.Web.Theming.MudBlazor.Bundling
+@inject IHostEnvironment Env
+@{
+    var rtl = CultureHelper.IsRtl ? "rtl" : string.Empty;
+}
+
+<!DOCTYPE html>
+<html lang="@CultureInfo.CurrentCulture.Name" dir="@rtl">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Nexus</title>
+    <base href="/"/>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"/>
+
+    <AbpStyles BundleName="@BlazorMudBlazorBasicThemeBundles.Styles.Global"
+               WebAssemblyStyleFiles="GlobalStyles"
+               @rendermode="PageRenderMode"/>
+
+    <link href="Nexus.Blazor.styles.css" rel="stylesheet"/>
+    <link href="Nexus.Blazor.Client.styles.css" rel="stylesheet"/>
+
+    <HeadOutlet @rendermode="PageRenderMode"/>
+</head>
+<body class="abp-application-layout @rtl">
+
+<Routes @rendermode="PageRenderMode"/>
+
+<div id="blazor-error-ui">
+    @if (Env.IsDevelopment())
+    {
+        <text>An unhandled exception has occurred. See browser dev tools for details.</text>
+    }
+    else if (Env.IsStaging() || Env.IsProduction())
+    {
+        <text>An error has occurred. This application may no longer respond until reloaded.</text>
+    }
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">&times;</a>
+</div>
+
+<AbpScripts BundleName="@BlazorMudBlazorBasicThemeBundles.Scripts.Global"
+            WebAssemblyScriptFiles="GlobalScripts"
+            @rendermode="PageRenderMode"/>
+
+<script src="_framework/blazor.web.js"></script>
+
+</body>
+</html>
+
+@code {
+    [CascadingParameter] private HttpContext HttpContext { get; set; } = null!;
+
+    private List<string> GlobalStyles => ["global.css"];
+    private List<string> GlobalScripts => ["global.js"];
+
+    /// <summary>
+    /// Per-page render mode:
+    ///  - [ExcludeFromInteractiveRouting] on a page  -> static SSR (null)
+    ///  - @rendermode / [RenderMode...] on a page    -> that mode
+    ///  - nothing declared                           -> InteractiveAuto
+    /// </summary>
+    private IComponentRenderMode? PageRenderMode
+    {
+        get
+        {
+            var endpoint = HttpContext.GetEndpoint();
+
+            // Opt out of interactivity entirely (login pages, etc.)
+            if (endpoint?.Metadata.GetMetadata<ExcludeFromInteractiveRoutingAttribute>() is not null)
+                return null;
+
+            // Page-declared render mode
+            var attr = endpoint?.Metadata.GetMetadata<RenderModeAttribute>();
+            if (attr is not null)
+                return attr.Mode;
+
+            // Default
+            return InteractiveAuto;
+        }
+    }
+
+}

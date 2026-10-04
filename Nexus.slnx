@@ -1,0 +1,24 @@
+<Solution>
+    <Configurations>
+        <Platform Name="Any CPU" />
+    </Configurations>
+    <Folder Name="/src/">
+        <Project Path="src/Nexus.Domain/Nexus.Domain.csproj" />
+        <Project Path="src/Nexus.Application/Nexus.Application.csproj" />
+        <Project Path="src/Nexus.EntityFrameworkCore/Nexus.EntityFrameworkCore.csproj" />
+        <Project Path="src/Nexus.Domain.Shared/Nexus.Domain.Shared.csproj" />
+        <Project Path="src/Nexus.Application.Contracts/Nexus.Application.Contracts.csproj" />
+        <Project Path="src/Nexus.HttpApi/Nexus.HttpApi.csproj" />
+        <Project Path="src/Nexus.HttpApi.Client/Nexus.HttpApi.Client.csproj" />
+        <Project Path="src/Nexus.DbMigrator/Nexus.DbMigrator.csproj" />
+        <Project Path="src/Nexus.Blazor/Nexus.Blazor.csproj" />
+        <Project Path="src/Nexus.Blazor.Client/Nexus.Blazor.Client.csproj" />
+    </Folder>
+    <Folder Name="/test/">
+        <Project Path="test/Nexus.Application.Tests/Nexus.Application.Tests.csproj" />
+        <Project Path="test/Nexus.EntityFrameworkCore.Tests/Nexus.EntityFrameworkCore.Tests.csproj" />
+        <Project Path="test/Nexus.TestBase/Nexus.TestBase.csproj" />
+        <Project Path="test/Nexus.Domain.Tests/Nexus.Domain.Tests.csproj" />
+        <Project Path="test/Nexus.HttpApi.Client.ConsoleTestApp/Nexus.HttpApi.Client.ConsoleTestApp.csproj" />
+    </Folder>
+</Solution>
