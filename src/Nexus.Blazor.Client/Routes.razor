@@ -1,6 +1,7 @@
 @using Volo.Abp.AspNetCore.Components.Web.MudBlazorBasicTheme.Themes.Basic
 @using Volo.Abp.AspNetCore.Components.Web.Theming.MudBlazor.Routing
 @using Microsoft.Extensions.Options
+@using Nexus.Blazor.Client.Components
 @inject IOptions<AbpRouterOptions> RouterOptions
 <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="RouterOptions.Value.AdditionalAssemblies">
     <Found Context="routeData">
@@ -11,3 +12,4 @@
         </AuthorizeRouteView>
     </Found>
 </Router>
+<AppLoaderHider />

@@ -15,14 +15,41 @@
     z-index: 1030;
 }
 
-#blazor-error-ui .reload {
-    color: #0d6efd;
-    text-decoration: underline;
+    #blazor-error-ui .reload {
+        color: #0d6efd;
+        text-decoration: underline;
+    }
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+
+#app-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
 }
 
-#blazor-error-ui .dismiss {
-    cursor: pointer;
-    position: absolute;
-    right: 0.75rem;
-    top: 0.5rem;
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #ddd;
+    border-top-color: #512bd4;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

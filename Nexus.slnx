@@ -1,7 +1,4 @@
 <Solution>
-    <Configurations>
-        <Platform Name="Any CPU" />
-    </Configurations>
     <Folder Name="/src/">
         <Project Path="src/Nexus.Domain/Nexus.Domain.csproj" />
         <Project Path="src/Nexus.Application/Nexus.Application.csproj" />

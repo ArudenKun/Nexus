@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Nexus.Blazor.Client": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:57172;http://localhost:57173"
+    }
+  }
+}
