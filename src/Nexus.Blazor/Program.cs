@@ -25,11 +25,9 @@ public static class Program
                 .UseAutofac()
                 .UseSerilog(
                     (context, services, loggerConfiguration) =>
-                    {
                         loggerConfiguration
                             .ReadFrom.Configuration(context.Configuration)
-                            .ReadFrom.Services(services);
-                    }
+                            .ReadFrom.Services(services)
                 );
             await builder.AddApplicationAsync<NexusBlazorModule>();
             var app = builder.Build();
@@ -49,7 +47,7 @@ public static class Program
         }
         finally
         {
-            Log.CloseAndFlush();
+            await Log.CloseAndFlushAsync();
         }
     }
 }

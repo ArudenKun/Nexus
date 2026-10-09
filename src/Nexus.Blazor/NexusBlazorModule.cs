@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
@@ -18,6 +19,7 @@ using Nexus.MultiTenancy;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Validation.AspNetCore;
 using Volo.Abp;
+using Volo.Abp.Account.Settings;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Components.Server.MudBlazorBasicTheme;
 using Volo.Abp.AspNetCore.Components.Server.MudBlazorBasicTheme.Bundling;
@@ -37,6 +39,7 @@ using Volo.Abp.Identity.Blazor.MudBlazor.Server;
 using Volo.Abp.Modularity;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.Security.Claims;
+using Volo.Abp.SettingManagement;
 using Volo.Abp.Swashbuckle;
 using Volo.Abp.TenantManagement.Blazor.MudBlazor.Server;
 using Volo.Abp.UI.Navigation;
@@ -304,16 +307,30 @@ public class NexusBlazorModule : AbpModule
         });
     }
 
+    public override async Task OnApplicationInitializationAsync(
+        ApplicationInitializationContext context
+    )
+    {
+        var configuration = context.GetConfiguration();
+        var settingManager = context.ServiceProvider.GetRequiredService<ISettingManager>();
+        await settingManager.SetGlobalAsync(
+            AccountSettingNames.IsSelfRegistrationEnabled,
+            configuration["App:IsSelfRegistrationEnabled"]
+        );
+        await base.OnApplicationInitializationAsync(context);
+    }
+
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
         var env = context.GetEnvironment();
         var app = context.GetApplicationBuilder();
+        var configuration = context.GetConfiguration();
 
         app.Use(
             async (ctx, next) =>
             {
                 /* Converting to https to be able to include https URLs in `/.well-known/openid-configuration` endpoint.
-                 * This should only be done if the request is coming outside of the cluster.  */
+                 * This should only be done if the request is coming outside the cluster.  */
                 if (ctx.Request.Headers.ContainsKey("from-ingress"))
                 {
                     ctx.Request.Scheme = "https";
@@ -338,7 +355,6 @@ public class NexusBlazorModule : AbpModule
 
         app.UseCorrelationId();
         app.UseRouting();
-        var configuration = context.GetConfiguration();
         if (Convert.ToBoolean(configuration["AuthServer:IsOnK8s"]))
         {
             app.Use(
@@ -395,11 +411,11 @@ public class NexusBlazorModule : AbpModule
                 .MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode()
                 .AddInteractiveWebAssemblyRenderMode()
-                .AddAdditionalAssemblies(
-                    builder
+                .AddAdditionalAssemblies([
+                    .. builder
                         .ServiceProvider.GetRequiredService<IOptions<AbpRouterOptions>>()
-                        .Value.AdditionalAssemblies.ToArray()
-                );
+                        .Value.AdditionalAssemblies,
+                ]);
         });
     }
 }
