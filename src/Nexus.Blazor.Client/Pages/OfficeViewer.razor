@@ -1,0 +1,66 @@
+﻿@page "/officeviewer"
+
+<MudPaper Class="pa-4 mb-4" Elevation="2">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="3">
+        <!-- File Picker -->
+        <MudFileUpload T="IBrowserFile" Accept=".xlsx, .xls" OnFilesChanged="OnInputFileChanged">
+            <MudButton HtmlTag="label"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.CloudUpload">
+                Upload Excel
+            </MudButton>
+        </MudFileUpload>
+
+        @if (_selectedFile != null)
+        {
+            <MudText Typo="Typo.body2">@_selectedFile.Name</MudText>
+
+            <!-- Sheet Selector -->
+            @if (SheetNames.Count > 1)
+            {
+                <MudSelect T="string"
+                           Label="Select Sheet"
+                           Value="_selectedExcelSheet?.Name"
+                           ValueChanged="OnSheetChanged"
+                           Dense="true"
+                           Margin="Margin.Dense">
+                    @foreach (var sheet in SheetNames)
+                    {
+                        <MudSelectItem Value="@sheet">@sheet</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+
+            <!-- Manual Reload Button -->
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.Refresh"
+                       OnClick="ReloadExcelHtmlAsync"
+                       Disabled="_isLoading">
+                Reload HTML
+            </MudButton>
+        }
+    </MudStack>
+</MudPaper>
+
+<!-- Render Area -->
+<MudPaper Elevation="3" Class="pa-4 excel-container">
+    @if (_isLoading)
+    {
+        <MudStack AlignItems="AlignItems.Center" Class="py-6">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+            <MudText Typo="Typo.caption">Converting Excel to HTML...</MudText>
+        </MudStack>
+    }
+    else if (string.IsNullOrEmpty(_excelHtml))
+    {
+        <MudText Typo="Typo.body1" Color="Color.Secondary" Align="Align.Center">
+            Upload an Excel file to generate and display HTML.
+        </MudText>
+    }
+    else
+    {
+        @((MarkupString)_excelHtml)
+    }
+</MudPaper>

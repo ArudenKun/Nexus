@@ -5,6 +5,7 @@
   "dependencies": {
     "@abp/aspnetcore.components.server.basictheme": "~10.7.0",
     "@abp/aspnetcore.mvc.ui.theme.basic": "~10.7.0",
+    "@abp/virtual-file-explorer": "~10.7.0",
     "bootstrap-icons": "^1.13.1"
   },
   "resolutions": {

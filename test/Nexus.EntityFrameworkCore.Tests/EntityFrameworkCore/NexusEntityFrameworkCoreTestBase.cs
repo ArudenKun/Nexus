@@ -1,8 +1,4 @@
-﻿using Volo.Abp;
+﻿namespace Nexus.EntityFrameworkCore;
 
-namespace Nexus.EntityFrameworkCore;
-
-public abstract class NexusEntityFrameworkCoreTestBase : NexusTestBase<NexusEntityFrameworkCoreTestModule>
-{
-
-}
+public abstract class NexusEntityFrameworkCoreTestBase
+    : NexusTestBase<NexusEntityFrameworkCoreTestModule> { }

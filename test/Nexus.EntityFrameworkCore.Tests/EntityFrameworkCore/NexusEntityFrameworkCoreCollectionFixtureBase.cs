@@ -1,9 +1,6 @@
-﻿using Nexus.EntityFrameworkCore;
-using Xunit;
+﻿using Xunit;
 
 namespace Nexus.EntityFrameworkCore;
 
-public class NexusEntityFrameworkCoreCollectionFixtureBase : ICollectionFixture<NexusEntityFrameworkCoreFixture>
-{
-
-}
+public class NexusEntityFrameworkCoreCollectionFixtureBase
+    : ICollectionFixture<NexusEntityFrameworkCoreFixture> { }

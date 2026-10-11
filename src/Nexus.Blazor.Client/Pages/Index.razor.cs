@@ -1,18 +1,13 @@
-﻿using Microsoft.AspNetCore.Components;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 
 namespace Nexus.Blazor.Client.Pages;
 
+[Authorize]
 public partial class Index
 {
     [Inject]
-    protected NavigationManager Navigation { get; set; } = default!;
-
-    private void Login()
-    {
-        Navigation.NavigateTo("/Account/Login", true);
-    }
+    protected NavigationManager Navigation { get; set; } = null!;
 
     protected override void Dispose(bool disposing)
     {

@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Localization.Resources.AbpUi;
 using Microsoft.Extensions.Configuration;
 using Nexus.Localization;
 using Nexus.MultiTenancy;
@@ -11,7 +10,6 @@ using Volo.Abp.Identity.Blazor.MudBlazor;
 using Volo.Abp.SettingManagement.Blazor.MudBlazor.Menus;
 using Volo.Abp.TenantManagement.Blazor.MudBlazor.Navigation;
 using Volo.Abp.UI.Navigation;
-using Volo.Abp.Users;
 
 namespace Nexus.Blazor.Client.Navigation;
 

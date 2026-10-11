@@ -1,4 +1,5 @@
 using System;
+using Dapper.SimpleSqlBuilder.DependencyInjection;
 using Gridify;
 using Microsoft.Extensions.DependencyInjection;
 using Nexus.Authors;
@@ -8,6 +9,7 @@ using Nexus.Entities.Books;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.BlobStoring.Database.EntityFrameworkCore;
+using Volo.Abp.Dapper;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore.PostgreSql;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
@@ -26,6 +28,7 @@ namespace Nexus.EntityFrameworkCore;
     typeof(AbpPermissionManagementEntityFrameworkCoreModule),
     typeof(AbpSettingManagementEntityFrameworkCoreModule),
     typeof(AbpEntityFrameworkCorePostgreSqlModule),
+    typeof(AbpDapperModule),
     typeof(AbpBackgroundJobsEntityFrameworkCoreModule),
     typeof(AbpAuditLoggingEntityFrameworkCoreModule),
     typeof(AbpFeatureManagementEntityFrameworkCoreModule),
@@ -47,6 +50,7 @@ public class NexusEntityFrameworkCoreModule : AbpModule
 
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.AddSimpleSqlBuilder("SqlBuilder");
         context.Services.AddAbpDbContext<NexusDbContext>(options =>
         {
             /* Remove "includeAllEntities: true" to create

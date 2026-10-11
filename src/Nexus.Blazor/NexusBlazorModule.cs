@@ -44,6 +44,7 @@ using Volo.Abp.Swashbuckle;
 using Volo.Abp.TenantManagement.Blazor.MudBlazor.Server;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
+using Volo.Abp.VirtualFileExplorer.Web;
 using Volo.Abp.VirtualFileSystem;
 
 namespace Nexus.Blazor;
@@ -57,6 +58,7 @@ namespace Nexus.Blazor;
     typeof(AbpIdentityBlazorMudBlazorServerModule),
     typeof(AbpTenantManagementBlazorMudBlazorServerModule),
     typeof(AbpAccountWebOpenIddictModule),
+    typeof(AbpVirtualFileExplorerWebModule),
     typeof(AbpAspNetCoreComponentsServerMudBlazorBasicThemeModule),
     typeof(AbpAspNetCoreComponentsWebAssemblyMudBlazorBasicThemeBundlingModule),
     typeof(AbpAspNetCoreMvcUiBasicThemeModule),
