@@ -1,0 +1,88 @@
+<UserControl
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:vm="using:Nexus.ViewModels"
+  xmlns:fluently="https://github.com/taner04/fluently"
+  xmlns:nexus="https://github.com/arudenkun/nexus"
+  mc:Ignorable="d"
+  d:DesignWidth="800"
+  d:DesignHeight="450"
+  x:Class="Nexus.Views.MainView"
+  x:DataType="vm:MainViewModel"
+>
+  <Grid RowDefinitions="Auto, *">
+    <Grid
+      Name="TitleBarHost"
+      ColumnDefinitions="Auto,Auto,*,Auto"
+      Background="Transparent"
+      WindowDecorationProperties.ElementRole="TitleBar"
+    >
+      <Image
+        Margin="12 4"
+        IsHitTestVisible="False"
+        Source="/Assets/Icon.png"
+        Width="18"
+        Height="18"
+        DockPanel.Dock="Left"
+        Name="WindowIcon"
+        RenderOptions.BitmapInterpolationMode="HighQuality"
+      >
+        <Image.IsVisible>
+          <OnPlatform Default="False">
+            <On Options="Windows" Content="True" />
+          </OnPlatform>
+        </Image.IsVisible>
+      </Image>
+
+      <TextBlock
+        Text="{Binding Title, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+        FontSize="12"
+        IsHitTestVisible="False"
+        VerticalAlignment="Center"
+        Grid.Column="1"
+      >
+        <TextBlock.IsVisible>
+          <OnPlatform Default="False">
+            <On Options="Windows" Content="True" />
+          </OnPlatform>
+        </TextBlock.IsVisible>
+      </TextBlock>
+    </Grid>
+    <nexus:BusyArea
+      WindowDecorationProperties.ElementRole="User"
+      Grid.Row="1"
+      IsBusy="{Binding IsBusy}"
+      BusyText="{Binding BusyText}"
+    >
+      <fluently:ToastHost Toasts="{Binding ToastService}">
+        <fluently:DialogHost
+          Dialogs="{Binding DialogService}"
+          DismissOnBackdropClick="True"
+          Backdrop="{DynamicResource SmokeFillColorDefaultBrush}"
+        >
+          <fluently:NavigationPane
+            Name="NavigationPane"
+            IsSearchVisible="True"
+            IsBackButtonVisible="True"
+            Navigation="{Binding NavigationService}"
+          >
+            <Border Classes="layer">
+              <ScrollViewer>
+                <fluently:NavigationHost
+                  Navigation="{Binding NavigationService}"
+                  Margin="40,28,40,40"
+                >
+                  <fluently:NavigationHost.PageTransition>
+                    <CrossFade Duration="0:0:0.15" />
+                  </fluently:NavigationHost.PageTransition>
+                </fluently:NavigationHost>
+              </ScrollViewer>
+            </Border>
+          </fluently:NavigationPane>
+        </fluently:DialogHost>
+      </fluently:ToastHost>
+    </nexus:BusyArea>
+  </Grid>
+</UserControl>
