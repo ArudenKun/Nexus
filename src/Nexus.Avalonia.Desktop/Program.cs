@@ -2,6 +2,7 @@
 using System.IO;
 using Autofac;
 using Avalonia;
+using HotAvalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -67,7 +68,8 @@ public static class Program
             builder.Services.AddObjectAccessor(containerBuilder);
 
             builder.AddAvalonia<App>(
-                appBuilder => appBuilder.UsePlatformDetect().WithInterFont().LogToTrace(),
+                appBuilder =>
+                    appBuilder.UsePlatformDetect().UseHotReload().WithInterFont().LogToTrace(),
                 appBuilder => appBuilder.StartWithClassicDesktopLifetime(args)
             );
 

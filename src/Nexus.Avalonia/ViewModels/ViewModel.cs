@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Configuration.Writable;
 using Fluently;
 using Microsoft.Extensions.Logging;
+using Nexus.Settings;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.EventBus.Local;
@@ -45,6 +47,9 @@ public abstract partial class ViewModel : ObservableObject, IViewModel, ITransie
 
     protected ILocalEventBus LocalEventBus =>
         LazyServiceProvider.LazyGetRequiredService<ILocalEventBus>();
+
+    protected IWritableOptions<ApplicationSettings> ApplicationOptions =>
+        LazyServiceProvider.LazyGetRequiredService<IWritableOptions<ApplicationSettings>>();
 
     public INavigationService NavigationService =>
         LazyServiceProvider.LazyGetRequiredService<INavigationService>();

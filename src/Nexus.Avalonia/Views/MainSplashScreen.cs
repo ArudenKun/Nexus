@@ -44,7 +44,7 @@ public class MainSplashScreen : IFAApplicationSplashScreen
     public IImage AppIcon =>
         new Bitmap(AssetLoader.Open(new Uri("avares://Nexus.Avalonia/Assets/icon.png")));
     public object SplashScreenContent { get; }
-    public int MinimumShowTime => (int)4.Seconds().TotalMilliseconds;
+    public int MinimumShowTime => (int)2.Seconds().TotalMilliseconds;
 
     public async Task RunTasks(CancellationToken cancellationToken)
     {
@@ -53,17 +53,17 @@ public class MainSplashScreen : IFAApplicationSplashScreen
 
     private async Task MigrateDatabaseAsync(CancellationToken cancellationToken)
     {
-        Content.TextBlock.Text = "Migrating Database";
-        try
-        {
-            await _dbMigrationService.MigrateAsync();
-            Content.TextBlock.Text = "Migrating Database Finished";
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Database migration failed");
-            Content.TextBlock.Text = "Migration Failed";
-            throw;
-        }
+        //Content.TextBlock.Text = "Migrating Database";
+        //try
+        //{
+        //    await _dbMigrationService.MigrateAsync();
+        //    Content.TextBlock.Text = "Migrating Database Finished";
+        //}
+        //catch (Exception ex)
+        //{
+        //    Logger.LogError(ex, "Database migration failed");
+        //    Content.TextBlock.Text = "Migration Failed";
+        //    throw;
+        //}
     }
 }

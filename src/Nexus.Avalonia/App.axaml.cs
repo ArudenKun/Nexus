@@ -2,8 +2,10 @@ using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Configuration.Writable;
 using Fluently;
 using Microsoft.Extensions.DependencyInjection;
+using Nexus.Settings;
 using Nexus.ViewModels;
 using Nexus.ViewModels.Pages;
 using Nexus.Views;
@@ -25,6 +27,10 @@ public class App : Application
 
     protected IAbpApplication AbpApplication { get; }
     protected IServiceProvider ServiceProvider => AbpApplication.ServiceProvider;
+    protected IThemeService ThemeService => ServiceProvider.GetRequiredService<IThemeService>();
+
+    protected IWritableOptions<ApplicationSettings> ApplicationOptions =>
+        ServiceProvider.GetRequiredService<IWritableOptions<ApplicationSettings>>();
 
     public override void Initialize()
     {
@@ -37,6 +43,14 @@ public class App : Application
 
     public override async void OnFrameworkInitializationCompleted()
     {
+        if (
+            AbpApplication
+            is IAbpApplicationWithInternalServiceProvider abpApplicationWithInternalServiceProvider
+        )
+            await abpApplicationWithInternalServiceProvider.InitializeAsync();
+
+        ThemeService.Theme = ApplicationOptions.CurrentValue.Theme;
+
         switch (ApplicationLifetime)
         {
             case IClassicDesktopStyleApplicationLifetime desktop:
@@ -48,10 +62,6 @@ public class App : Application
                 };
                 break;
             case ISingleViewApplicationLifetime singleViewPlatform:
-                await (
-                    (IAbpApplicationWithInternalServiceProvider)AbpApplication
-                ).InitializeAsync();
-
                 singleViewPlatform.MainView = ServiceProvider.GetRequiredService<MainView>();
                 singleViewPlatform.MainView.Unloaded += (_, _) =>
                 {

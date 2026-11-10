@@ -10,7 +10,8 @@
   mc:Ignorable="d"
 >
   <UserControl.Styles>
-    <Style Selector="nexus|BusyArea DockPanel#LoadingBusyArea">
+    <!-- Transition on the loading overlay (templated part => must use /template/) -->
+    <Style Selector="nexus|BusyArea /template/ DockPanel#LoadingBusyArea">
       <Setter Property="Transitions">
         <Transitions>
           <DoubleTransition Property="Opacity" Duration="0:0:0.3" />
@@ -26,7 +27,8 @@
       <Setter Property="Opacity" Value="0" />
     </Style>
 
-    <Style Selector="nexus|BusyArea ContentControl">
+    <!-- Transition on the busy content -->
+    <Style Selector="nexus|BusyArea /template/ ContentControl#BusyContent">
       <Setter Property="Transitions">
         <Transitions>
           <DoubleTransition Property="Opacity" Duration="0:0:0.3" />
@@ -46,10 +48,11 @@
       <Setter Property="Template">
         <ControlTemplate>
           <Panel>
-            <ContentControl Name="BusyContent" Content="{TemplateBinding Content}" />
+            <ContentControl Name="BusyContent" Content="{TemplateBinding Content}" Opacity="1" />
 
             <DockPanel
               Name="LoadingBusyArea"
+              Opacity="0"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
               LastChildFill="True"
@@ -59,8 +62,7 @@
                 DockPanel.Dock="Bottom"
                 Name="PART_BusyText"
                 FontWeight="DemiBold"
-                IsVisible="{TemplateBinding BusyText,
-                                                                   Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                IsVisible="{TemplateBinding IsBusy}"
                 Text="{TemplateBinding BusyText}"
               />
 

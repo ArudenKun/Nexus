@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Configuration.Writable;
+using Configuration.Writable.FormatProvider;
 using Fluently;
 using Microsoft.Extensions.DependencyInjection;
 using Nexus.EntityFrameworkCore;
@@ -24,9 +25,12 @@ public class NexusAvaloniaModule : AbpModule
         {
             var appPaths = context.Services.GetSingletonInstance<AppPaths>();
             builder.UseCustomDirectory(appPaths.Config).AddFilePath("settings.json");
-            builder.Add<AppSettings>(c =>
+            builder.Add<ApplicationSettings>(c =>
             {
-                c.SectionName = AppSettings.SectionName;
+                c.SectionName = ApplicationSettings.SectionName;
+                c.FormatProvider = new JsonAotFormatProvider(
+                    ApplicationSettings.ApplicationSettingsJsonSerializerContext.Default
+                );
             });
         });
         context.Services.AddConventionalRegistrar(new ViewModelConventionalRegistrar());

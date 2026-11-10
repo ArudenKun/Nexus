@@ -1,8 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
+using Humanizer;
 using Lucide.Avalonia;
-using Nexus.Messages;
+using Nexus.Events;
 
 namespace Nexus.ViewModels.Pages;
 
@@ -16,8 +17,12 @@ public partial class HomePageViewModel : PageViewModel
     public override LucideIconKind IconKind => LucideIconKind.House;
 
     [RelayCommand]
-    private void SetBusy()
+    private async Task SetGlobalBusyAsync()
     {
-        LocalEventBus.PublishAsync(new SetGlobalBusyMessage("Testing..."), false);
+        var duration = Random.Shared.Next(2, 5).Seconds();
+        await LocalEventBus.PublishAsync(
+            new SetGlobalBusyEvent($"Testing... ({duration.Humanize()})", duration),
+            false
+        );
     }
 }

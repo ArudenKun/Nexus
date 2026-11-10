@@ -3,10 +3,36 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:fa="using:FluentAvalonia.UI.Controls"
+  xmlns:nexus="https://github.com/arudenkun/nexus"
   mc:Ignorable="d"
   d:DesignWidth="800"
   d:DesignHeight="450"
+  x:DataType="nexus:SettingsPageViewModel"
   x:Class="Nexus.Views.Pages.SettingsPageView"
 >
-  Welcome to Settings Page!
+  <ScrollViewer>
+    <StackPanel Spacing="8">
+      <fa:FASettingsExpander
+        Header="App Theme"
+        IconSource="DarkTheme"
+        Description="Change the current app theme"
+      >
+        <fa:FASettingsExpander.Footer>
+          <ComboBox
+            Name="ThemeCb"
+            SelectedItem="{Binding Theme}"
+            ItemsSource="{Binding Themes}"
+            MinWidth="150"
+          >
+            <Interaction.Behaviors>
+              <ValueChangedTriggerBehavior Binding="{Binding  Theme}">
+                <InvokeCommandAction Command="{Binding ChangeThemeCommand}" />
+              </ValueChangedTriggerBehavior>
+            </Interaction.Behaviors>
+          </ComboBox>
+        </fa:FASettingsExpander.Footer>
+      </fa:FASettingsExpander>
+    </StackPanel>
+  </ScrollViewer>
 </UserControl>

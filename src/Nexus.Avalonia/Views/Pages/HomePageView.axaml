@@ -11,6 +11,6 @@
   x:Class="Nexus.Views.Pages.HomePageView"
 >
   <StackPanel>
-    <Button Command="{Binding  SetBusyCommand}">Set Busy</Button>
+    <Button Command="{Binding  SetGlobalBusyCommand}">Set Busy Test</Button>
   </StackPanel>
 </UserControl>

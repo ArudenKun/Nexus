@@ -36,6 +36,12 @@
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup Label="HotAvalonia">
+    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="12.1.6" PrivateAssets="All" Publish="True" />
+    <PackageReference Include="HotAvalonia" Version="3.1.5" PrivateAssets="All" Publish="True" />
+    <PackageReference Include="MonoMod.RuntimeDetour" Version="25.3.6" PrivateAssets="All" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\modules\Volo.Abp.Avalonia\Volo.Abp.Avalonia.csproj" />
     <ProjectReference Include="..\Nexus.Avalonia\Nexus.Avalonia.csproj" />

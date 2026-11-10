@@ -16,6 +16,7 @@
     <Grid
       Name="TitleBarHost"
       ColumnDefinitions="Auto,Auto,*,Auto"
+      Margin="0,5,0,0"
       Background="Transparent"
       WindowDecorationProperties.ElementRole="TitleBar"
     >
