@@ -17,6 +17,7 @@ public partial class SettingsPageViewModel : PageViewModel, INavigatedTo, ISingl
     public SettingsPageViewModel()
     {
         IsFooter = true;
+        IsVisible = false;
     }
 
     protected IThemeService ThemeService =>

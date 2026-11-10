@@ -6,6 +6,7 @@
   xmlns:vm="using:Nexus.ViewModels"
   xmlns:fluently="https://github.com/taner04/fluently"
   xmlns:nexus="https://github.com/arudenkun/nexus"
+  xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
   mc:Ignorable="d"
   d:DesignWidth="800"
   d:DesignHeight="450"
@@ -63,25 +64,16 @@
           DismissOnBackdropClick="True"
           Backdrop="{DynamicResource SmokeFillColorDefaultBrush}"
         >
-          <fluently:NavigationPane
-            Name="NavigationPane"
-            IsSearchVisible="True"
-            IsBackButtonVisible="True"
-            Navigation="{Binding NavigationService}"
+          <fa:FANavigationView
+            AlwaysShowHeader="False"
+            WindowDecorationProperties.ElementRole="User"
+            PaneDisplayMode="Left"
+            Name="NavView"
+            IsSettingsVisible="True"
+            IsBackEnabled="{Binding #FrameView.CanGoBack}"
           >
-            <Border Classes="layer">
-              <ScrollViewer>
-                <fluently:NavigationHost
-                  Navigation="{Binding NavigationService}"
-                  Margin="40,28,40,40"
-                >
-                  <fluently:NavigationHost.PageTransition>
-                    <CrossFade Duration="0:0:0.15" />
-                  </fluently:NavigationHost.PageTransition>
-                </fluently:NavigationHost>
-              </ScrollViewer>
-            </Border>
-          </fluently:NavigationPane>
+            <fa:FAFrame Name="FrameView" />
+          </fa:FANavigationView>
         </fluently:DialogHost>
       </fluently:ToastHost>
     </nexus:BusyArea>

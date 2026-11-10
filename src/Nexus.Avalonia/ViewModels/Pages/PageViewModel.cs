@@ -24,6 +24,7 @@ public abstract class PageViewModel : ViewModel, INavigableViewModel
     public string Name { get; protected set; }
 
     public bool IsFooter { get; protected set; }
+    public bool IsVisible { get; protected set; } = true;
 
     /// <summary>
     /// The icon of the page.
