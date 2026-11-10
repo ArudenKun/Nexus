@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using Humanizer;
 using Lucide.Avalonia;
+using Microsoft.Extensions.Logging;
 using Nexus.Events;
 
 namespace Nexus.ViewModels.Pages;
@@ -19,10 +20,10 @@ public partial class HomePageViewModel : PageViewModel
     [RelayCommand]
     private async Task SetGlobalBusyAsync()
     {
+        Logger.LogInformation("SetGlobalBusyAsync Pressed");
         var duration = Random.Shared.Next(2, 5).Seconds();
         await LocalEventBus.PublishAsync(
-            new SetGlobalBusyEvent($"Testing... ({duration.Humanize()})", duration),
-            false
+            new SetGlobalBusyEvent($"Testing... ({duration.Humanize()})", duration)
         );
     }
 }

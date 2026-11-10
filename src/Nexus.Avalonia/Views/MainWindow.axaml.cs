@@ -1,10 +1,11 @@
 using System;
 using FluentAvalonia.UI.Windowing;
 using Microsoft.Extensions.DependencyInjection;
+using Volo.Abp.DependencyInjection;
 
 namespace Nexus.Views;
 
-public partial class MainWindow : FAAppWindow
+public partial class MainWindow : FAAppWindow, ISingletonDependency
 {
     public MainWindow(IServiceProvider serviceProvider)
     {

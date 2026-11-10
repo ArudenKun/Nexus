@@ -6,7 +6,7 @@ using Volo.Abp.EventBus.Local;
 
 namespace Nexus.ViewModels;
 
-public partial class MainViewModel : ViewModel, ISingletonDependency
+public class MainViewModel : ViewModel, ISingletonDependency
 {
     public MainViewModel(ILocalEventBus localEventBus)
     {

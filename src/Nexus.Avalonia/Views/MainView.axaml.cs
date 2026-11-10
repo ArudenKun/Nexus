@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Controls;
-using Fluently;
+using Fluently.Controls.Navigation;
 using Lucide.Avalonia;
 using Nexus.ViewModels;
 using Nexus.ViewModels.Pages;

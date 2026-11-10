@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Configuration.Writable;
-using Fluently;
+using Fluently.Abstractions.Navigation;
+using Fluently.Abstractions.Theme;
+using Fluently.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Nexus.Settings;
 using Nexus.ViewModels;
@@ -27,10 +30,11 @@ public class App : Application
 
     protected IAbpApplication AbpApplication { get; }
     protected IServiceProvider ServiceProvider => AbpApplication.ServiceProvider;
-    protected IThemeService ThemeService => ServiceProvider.GetRequiredService<IThemeService>();
 
     protected IWritableOptions<ApplicationSettings> ApplicationOptions =>
         ServiceProvider.GetRequiredService<IWritableOptions<ApplicationSettings>>();
+
+    protected IThemeService ThemeService => ServiceProvider.GetRequiredService<IThemeService>();
 
     public override void Initialize()
     {

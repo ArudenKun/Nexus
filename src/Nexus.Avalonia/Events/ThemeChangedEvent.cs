@@ -1,4 +1,4 @@
-﻿using Fluently;
+﻿using Fluently.Abstractions.Theme;
 
 namespace Nexus.Events;
 

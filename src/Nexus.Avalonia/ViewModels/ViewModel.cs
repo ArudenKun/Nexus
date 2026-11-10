@@ -2,7 +2,10 @@
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Configuration.Writable;
-using Fluently;
+using Fluently.Abstractions.Dialogs;
+using Fluently.Abstractions.Navigation;
+using Fluently.Abstractions.Toasts;
+using Fluently.Extensions;
 using Microsoft.Extensions.Logging;
 using Nexus.Settings;
 using Volo.Abp.Data;
@@ -14,9 +17,11 @@ using Volo.Abp.Uow;
 
 namespace Nexus.ViewModels;
 
-public interface IViewModel : IUnitOfWorkEnabled, IHasExtraProperties { }
-
-public abstract partial class ViewModel : ObservableObject, IViewModel, ITransientDependency
+public abstract partial class ViewModel
+    : ObservableObject,
+        IUnitOfWorkEnabled,
+        IHasExtraProperties,
+        ITransientDependency
 {
     protected ViewModel()
     {

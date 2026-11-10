@@ -1,4 +1,5 @@
 <Solution>
+    <Folder Name="/external/" />
     <Folder Name="/src/">
         <Project Path="src/Nexus.Domain/Nexus.Domain.csproj" />
         <Project Path="src/Nexus.Application/Nexus.Application.csproj" />
@@ -14,6 +15,8 @@
         <Project Path="src/Nexus.DbMigrator/Nexus.DbMigrator.csproj" />
     </Folder>
     <Folder Name="/src/modules/">
+        <Project Path="src/modules/Fluently.Avalonia/Fluently.Avalonia.csproj" />
+        <Project Path="src/modules/Fluently.Core/Fluently.Core.csproj" />
         <Project Path="src/modules/Volo.Abp.Avalonia/Volo.Abp.Avalonia.csproj" />
     </Folder>
     <Folder Name="/test/">

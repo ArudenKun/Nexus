@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Configuration.Writable;
+﻿using Configuration.Writable;
 using Configuration.Writable.FormatProvider;
 using Fluently;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +13,7 @@ namespace Nexus;
 
 [DependsOn(
     typeof(AbpAutofacModule),
+    typeof(FluentlyAvaloniaModule),
     typeof(NexusApplicationModule),
     typeof(NexusEntityFrameworkCoreModule)
 )]
@@ -38,16 +38,12 @@ public class NexusAvaloniaModule : AbpModule
 
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        ViewRegistryConfigurator.Register();
         ConfigureAvaloniaServices(context);
     }
 
     private void ConfigureAvaloniaServices(ServiceConfigurationContext context)
     {
-        context.Services.AddFluently();
-        context.Services.AddFluentlyAvalonia();
-
         var containerBuilder = context.Services.GetContainerBuilder();
-
-        containerBuilder.RegisterDecorator<NexusViewProvider, IViewProvider>();
     }
 }

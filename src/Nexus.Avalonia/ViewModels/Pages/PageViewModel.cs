@@ -1,4 +1,4 @@
-﻿using Fluently;
+﻿using Fluently.Abstractions.Navigation;
 using Humanizer;
 using Lucide.Avalonia;
 using Volo.Abp.DynamicProxy;
