@@ -5,15 +5,16 @@ using FluentAvalonia.UI.Controls;
 using Humanizer;
 using Microsoft.Extensions.Logging;
 using Nexus.Books;
-using Nexus.Events;
 using Nexus.Fluent.Abstractions.Navigation;
 using Nexus.Services;
 using Volo.Abp.Application.Dtos;
 
 namespace Nexus.ViewModels.Pages;
 
-public partial class HomePageViewModel : PageViewModel, INavigatedTo
+public partial class HomePageViewModel : PageViewModel, INavigatedTo, INavigatedFrom
 {
+    private CancellationTokenSource? _loadCts;
+
     public HomePageViewModel(IBookAppService bookAppService, AuthService authService)
     {
         BookAppService = bookAppService;
@@ -34,8 +35,6 @@ public partial class HomePageViewModel : PageViewModel, INavigatedTo
     {
         Logger.LogInformation("SetGlobalBusyAsync Pressed");
         await SetBusyAsync(async () => await Task.Delay(3.Seconds()), "Loading...");
-        // var duration = Random.Shared.Next(2, 5).Seconds();
-        // await LocalEventBus.PublishAsync(new BusyShellEvent(true, duration));
     }
 
     [RelayCommand]
@@ -44,7 +43,23 @@ public partial class HomePageViewModel : PageViewModel, INavigatedTo
         AuthService.ManualExpire();
     }
 
-    public async Task OnNavigatedToAsync(CancellationToken cancellationToken)
+    public Task OnNavigatedToAsync(CancellationToken cancellationToken)
+    {
+        _loadCts?.Cancel();
+        _loadCts?.Dispose();
+        _loadCts = new CancellationTokenSource();
+
+        SetBusy(LoadDataAsync, "Loading data...", cancellationToken: _loadCts.Token);
+        return Task.CompletedTask;
+    }
+
+    public Task OnNavigatedFromAsync(CancellationToken cancellationToken)
+    {
+        _loadCts?.Cancel();
+        return Task.CompletedTask;
+    }
+
+    private async Task LoadDataAsync()
     {
         var data = await BookAppService.GetListAsync(new PagedAndSortedResultRequestDto());
         Data = JsonSerializer.Serialize(data);

@@ -21,7 +21,7 @@ namespace Nexus.ViewModels.Toasts;
 /// <c>[ObservableObject]</c> when the toast has properties that change. Implement <see cref="IToast"/> instead when the
 /// toast needs a different base class.
 /// </summary>
-public abstract class ToastViewModel : ViewModel, IToast, IHostedToast
+public abstract class ToastViewModel : NavigableViewModel, IToast, IHostedToast
 {
     private IToastService? _toasts;
 

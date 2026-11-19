@@ -1,16 +1,18 @@
 ﻿using Avalonia.Automation;
+using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Styling;
-using Lucide.Avalonia;
-using Nexus.Extensions.Controls;
+using FluentAvalonia.UI.Controls;
 using Nexus.Fluent.Abstractions.Toasts;
 using static Avalonia.Markup.Declarative.Factories;
+using TemplatedControl = Avalonia.Controls.Primitives.TemplatedControl;
 
 namespace Nexus.Views.Toasts;
 
 public class ToastView : View<Toast>
 {
     private readonly IToastService _toastService;
+
     private Border _card = null!;
 
     public ToastView(IToastService toastService)
@@ -20,6 +22,11 @@ public class ToastView : View<Toast>
 
     protected override void OnInitialized()
     {
+        UpdateSeverityClass();
+    }
+
+    private void UpdateSeverityClass()
+    {
         _card.Classes.Add(ViewModel.Severity.ToString().ToLowerInvariant());
     }
 
@@ -28,23 +35,37 @@ public class ToastView : View<Toast>
             new Style<Border>(s => s.Class("toast"))
                 .Setter(
                     Avalonia.Controls.Border.BackgroundProperty,
-                    new DynamicResourceExtension("FlyoutPresenterBackground")
+                    new DynamicResourceExtension("CardBackgroundFillColorDefaultBrush")
                 )
                 .Setter(
                     Avalonia.Controls.Border.BorderBrushProperty,
-                    new DynamicResourceExtension("FlyoutBorderThemeBrush")
+                    new DynamicResourceExtension("CardStrokeColorDefaultBrush")
                 )
                 .Setter(Avalonia.Controls.Border.BorderThicknessProperty, new Thickness(1))
-                .Setter(Avalonia.Controls.Border.CornerRadiusProperty, new CornerRadius(8))
-                .Setter(Avalonia.Controls.Border.PaddingProperty, new Thickness(16, 12))
+                .Setter(
+                    Avalonia.Controls.Border.CornerRadiusProperty,
+                    new DynamicResourceExtension("OverlayCornerRadius")
+                )
                 .Setter(
                     Avalonia.Controls.Border.BoxShadowProperty,
-                    BoxShadows.Parse("0 8 24 0 #33000000")
+                    BoxShadows.Parse("0 8 16 0 #24000000")
                 ),
             new Style<Border>(s => s.Class("toast-tint")).Setter(
                 Avalonia.Controls.Border.CornerRadiusProperty,
-                new CornerRadius(7)
+                new DynamicResourceExtension("OverlayCornerRadius")
             ),
+            new Style<FAFontIcon>(s => s.Class("toast-icon"))
+                .Setter(
+                    FluentAvalonia.UI.Controls.FAFontIcon.FontFamilyProperty,
+                    new DynamicResourceExtension("SymbolThemeFontFamily")
+                )
+                .Setter(FluentAvalonia.UI.Controls.FAFontIcon.FontSizeProperty, 16d),
+            new Style<Button>(s => s.Class("toast-close"))
+                .Setter(TemplatedControl.BackgroundProperty, Brushes.Transparent)
+                .Setter(TemplatedControl.BorderThicknessProperty, new Thickness(0))
+                .Setter(TemplatedControl.PaddingProperty, new Thickness(6))
+                .Setter(VerticalAlignmentProperty, VerticalAlignment.Top),
+            // Information
             new Style<Border>(s =>
                 s.Class("toast")
                     .Class("information")
@@ -55,23 +76,66 @@ public class ToastView : View<Toast>
                 Avalonia.Controls.Border.BackgroundProperty,
                 new DynamicResourceExtension("SystemFillColorAttentionBackgroundBrush")
             ),
+            new Style<FAFontIcon>(s =>
+                s.Class("toast")
+                    .Class("information")
+                    .Descendant()
+                    .OfType<FAFontIcon>()
+                    .Class("toast-icon")
+            ).Setter(
+                TemplatedControl.ForegroundProperty,
+                new DynamicResourceExtension("SystemFillColorAttentionBrush")
+            ),
+            // Success
             new Style<Border>(s =>
                 s.Class("toast").Class("success").Descendant().OfType<Border>().Class("toast-tint")
             ).Setter(
                 Avalonia.Controls.Border.BackgroundProperty,
                 new DynamicResourceExtension("SystemFillColorSuccessBackgroundBrush")
             ),
+            new Style<FAFontIcon>(s =>
+                s.Class("toast")
+                    .Class("success")
+                    .Descendant()
+                    .OfType<FAFontIcon>()
+                    .Class("toast-icon")
+            ).Setter(
+                TemplatedControl.ForegroundProperty,
+                new DynamicResourceExtension("SystemFillColorSuccessBrush")
+            ),
+            // Warning
             new Style<Border>(s =>
                 s.Class("toast").Class("warning").Descendant().OfType<Border>().Class("toast-tint")
             ).Setter(
                 Avalonia.Controls.Border.BackgroundProperty,
                 new DynamicResourceExtension("SystemFillColorCautionBackgroundBrush")
             ),
+            new Style<FAFontIcon>(s =>
+                s.Class("toast")
+                    .Class("warning")
+                    .Descendant()
+                    .OfType<FAFontIcon>()
+                    .Class("toast-icon")
+            ).Setter(
+                TemplatedControl.ForegroundProperty,
+                new DynamicResourceExtension("SystemFillColorCautionBrush")
+            ),
+            // Error
             new Style<Border>(s =>
                 s.Class("toast").Class("error").Descendant().OfType<Border>().Class("toast-tint")
             ).Setter(
                 Avalonia.Controls.Border.BackgroundProperty,
                 new DynamicResourceExtension("SystemFillColorCriticalBackgroundBrush")
+            ),
+            new Style<FAFontIcon>(s =>
+                s.Class("toast")
+                    .Class("error")
+                    .Descendant()
+                    .OfType<FAFontIcon>()
+                    .Class("toast-icon")
+            ).Setter(
+                TemplatedControl.ForegroundProperty,
+                new DynamicResourceExtension("SystemFillColorCriticalBrush")
             ),
         ];
 
@@ -81,26 +145,26 @@ public class ToastView : View<Toast>
             .Name("Card", Scope)
             .Classes("toast")
             .Width(380)
-            .Padding(0)
-            .Background("CardBackgroundFillColorDefaultBrush".GetDynamicResource())
-            .BorderBrush("CardStrokeColorDefaultBrush".GetDynamicResource())
-            .BorderThickness(1)
-            .CornerRadius("OverlayCornerRadius".GetDynamicResource())
             .ClipToBounds(true)
-            .BoxShadow(BoxShadows.Parse("0 8 16 0 #24000000"))
+            .With(x => AutomationProperties.SetLiveSetting(x, AutomationLiveSetting.Polite))
             .Child(
                 Panel()
                     .Children(
                         Border().Classes("toast-tint"),
                         Grid()
                             .Cols("Auto,*,Auto")
-                            .Margin(16, 14, 8, 16)
+                            .Margin(16, 14, 10, 14)
                             .Children(
-                                new LucideIcon().Kind(ToIconKind(vm.Severity)).Margin(0, 2, 14, 0),
+                                FAFontIcon()
+                                    .Glyph(ToIconGlyph(vm.Severity))
+                                    .Classes("toast-icon")
+                                    .VerticalAlignment(VerticalAlignment.Top)
+                                    .Margin(0, 2, 12, 0),
                                 StackPanel()
                                     .Col(1)
-                                    .Spacing(6)
+                                    .Spacing(4)
                                     .Margin(0, 0, 12, 0)
+                                    .VerticalAlignment(VerticalAlignment.Center)
                                     .Children(
                                         TextBlock()
                                             .Text(vm, x => x.Title)
@@ -109,6 +173,12 @@ public class ToastView : View<Toast>
                                         TextBlock()
                                             .Text(vm, x => x.Message)
                                             .Classes("toast-message")
+                                            .TextWrapping(TextWrapping.Wrap)
+                                            .IsVisible(
+                                                vm,
+                                                x => x.Message,
+                                                converter: StringConverters.IsNotNullOrEmpty
+                                            )
                                     ),
                                 Button()
                                     .Col(2)
@@ -117,28 +187,19 @@ public class ToastView : View<Toast>
                                     .ToolTip_Tip("Close")
                                     .With(x => AutomationProperties.SetName(x, "Close"))
                                     .Content(
-                                        PathIcon()
-                                            .Width(10)
-                                            .Height(10)
-                                            .Data(
-                                                Geometry.Parse(
-                                                    "M2.59,1.17L8,6.59L13.41,1.17L14.83,2.59L9.41,8L14.83,13.41L13.41,14.83L8,9.41L2.59,14.83L1.17,13.41L6.59,8L1.17,2.59Z"
-                                                )
-                                            )
+                                        new FASymbolIcon { Symbol = FASymbol.Cancel, FontSize = 12 }
                                     )
                             )
                     )
             );
 
-    private static LucideIconKind ToIconKind(ToastSeverity severity)
-    {
-        return severity switch
+    private static string ToIconGlyph(ToastSeverity severity) =>
+        severity switch
         {
-            ToastSeverity.Information => LucideIconKind.Info,
-            ToastSeverity.Success => LucideIconKind.Check,
-            ToastSeverity.Warning => LucideIconKind.CircleExclamationPoint,
-            ToastSeverity.Error => LucideIconKind.ShieldX,
+            ToastSeverity.Information => "\uE946", // Info
+            ToastSeverity.Success => "\uEC61", // CompletedSolid (use "\uE73E" for outline CheckMark)
+            ToastSeverity.Warning => "\uE7BA", // Warning
+            ToastSeverity.Error => "\uEB90", // StatusErrorFull (use "\uEA39" for ErrorBadge)
             _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, null),
         };
-    }
 }

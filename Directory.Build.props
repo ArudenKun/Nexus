@@ -1,0 +1,13 @@
+<Project>
+  <ItemGroup>
+    <!-- Surface AvaloniaResource identities to source generators. -->
+    <CompilerVisibleItemMetadata Include="AdditionalFiles"
+                                 MetadataName="AvaloniaResource" />
+
+    <!-- Copy every AvaloniaResource into the analyzer's AdditionalFiles with
+         logical name = the resource path (e.g. "Assets/Images/test.ico"). -->
+    <AdditionalFiles Include="@(AvaloniaResource)"
+                     AvaloniaResource="true"
+                     Visible="false" />
+  </ItemGroup>
+</Project>

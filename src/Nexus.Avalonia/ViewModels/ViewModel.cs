@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Runtime.CompilerServices;
+using AsyncAwaitBestPractices;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Configuration.Writable;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,6 +11,7 @@ using Nexus.Fluent.Extensions;
 using Nexus.Options;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.DynamicProxy;
 using Volo.Abp.EventBus.Local;
 using Volo.Abp.Guids;
 using Volo.Abp.Timing;
@@ -77,7 +80,39 @@ public abstract partial class ViewModel
     [ObservableProperty]
     public partial string BusyText { get; set; } = string.Empty;
 
-    // ---- Existing local busy logic, unchanged ----
+    protected virtual void SetBusy(
+        Func<Task> func,
+        string busyText = "",
+        bool showException = true,
+        CancellationToken cancellationToken = default,
+        [CallerMemberName] string? caller = null
+    ) =>
+        SetBusyAsync(func, busyText, showException, cancellationToken)
+            .SafeFireAndForget(ex =>
+                Logger.LogError(
+                    ex,
+                    "An error occured while in the busy {Type}:{Caller}",
+                    ProxyHelper.GetUnProxiedType(GetType()).FullName,
+                    caller
+                )
+            );
+
+    protected virtual void SetBusy(
+        Func<CancellationToken, Task> func,
+        string busyText = "",
+        bool showException = true,
+        CancellationToken cancellationToken = default,
+        [CallerMemberName] string? caller = null
+    ) =>
+        SetBusyAsync(func, busyText, showException, cancellationToken)
+            .SafeFireAndForget(ex =>
+                Logger.LogError(
+                    ex,
+                    "An error occured while in the busy {Type}:{Caller}",
+                    ProxyHelper.GetUnProxiedType(GetType()).FullName,
+                    caller
+                )
+            );
 
     protected virtual Task SetBusyAsync(
         Func<Task> func,

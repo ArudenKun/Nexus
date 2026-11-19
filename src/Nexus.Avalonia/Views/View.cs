@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Avalonia.Markup.Xaml.MarkupExtensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Nexus.Fluent.Abstractions.Views;
-using Nexus.ViewModels;
 using Volo.Abp.DependencyInjection;
 
 namespace Nexus.Views;
@@ -32,4 +32,7 @@ public abstract class View<TViewModel>
         LazyServiceProvider.GetService<ILogger>(_ =>
             LoggerFactory.CreateLogger(GetType().FullName!)
         );
+
+    protected static DynamicResourceExtension DynamicResource(object resourceKey) =>
+        new(resourceKey);
 }

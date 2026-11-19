@@ -23,7 +23,7 @@ namespace Nexus.ViewModels.Dialogs;
 /// yourself. Implement <see cref="IDialog{TResult}"/> instead when the dialog needs a different base class.
 /// </summary>
 /// <typeparam name="TResult">The type of the result the dialog returns.</typeparam>
-public abstract class DialogViewModel<TResult> : ViewModel, IDialog<TResult>, IHostedDialog
+public abstract class DialogViewModel<TResult> : NavigableViewModel, IDialog<TResult>, IHostedDialog
 {
     private IDialogService? _dialogs;
 

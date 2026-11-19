@@ -1,7 +1,10 @@
 using Avalonia.Svg.Skia;
+using Avalonia.Xaml.Interactions.Core;
+using Avalonia.Xaml.Interactivity;
 using FluentAvalonia.Styling;
 using Lucide.Avalonia;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Nexus.Events;
 using Nexus.Extensions;
 using Nexus.Fluent;
@@ -18,6 +21,9 @@ using Volo.Abp.EventBus.Local;
 [assembly: GenerateMarkupExtensionsForAssembly(typeof(SvgImage))]
 [assembly: GenerateFactoriesForAssembly(typeof(LucideIcon))]
 [assembly: GenerateMarkupExtensionsForAssembly(typeof(LucideIcon))]
+[assembly: GenerateMarkupExtensionsForAssembly(typeof(IBehavior))]
+
+[assembly: GenerateStaticResources("AvaloniaResources")]
 
 namespace Nexus;
 
@@ -33,21 +39,21 @@ public class App : Application
 
     public static new App Current =>
         (App?)Application.Current ?? throw new InvalidOperationException("App.Current not found");
+    public static new IClassicDesktopStyleApplicationLifetime ApplicationLifetime =>
+        (IClassicDesktopStyleApplicationLifetime?)Application.Current?.ApplicationLifetime
+        ?? throw new InvalidOperationException("App.Current not found");
 
     public IServiceProvider ServiceProvider { get; init; } = null!;
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime)
-        {
-            desktopLifetime.MainWindow = ServiceProvider.GetRequiredService<MainWindow>();
-            desktopLifetime.ShutdownRequested += DesktopLifetimeOnShutdownRequested;
+        ApplicationLifetime.MainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+        ApplicationLifetime.ShutdownRequested += DesktopLifetimeOnShutdownRequested;
 
-            ServiceProvider
-                .GetRequiredService<ILocalEventBus>()
-                .PublishAsync(new AvaloniaReadyEvent())
-                .WaitOnDispatcher();
-        }
+        ServiceProvider
+            .GetRequiredService<ILocalEventBus>()
+            .PublishAsync(new AvaloniaReadyEvent())
+            .WaitOnDispatcher();
 
         base.OnFrameworkInitializationCompleted();
     }
@@ -66,18 +72,18 @@ public class App : Application
         try
         {
             var authService = ServiceProvider.GetRequiredService<AuthService>();
-            await authService.LogoutAsync().WaitAsync(TimeSpan.FromSeconds(3));
+            await authService.LogoutAsync().WaitAsync(TimeSpan.FromSeconds(5));
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Log if needed, but always allow shutdown to proceed
+            ServiceProvider
+                .GetRequiredService<ILogger<App>>()
+                .LogWarning(ex, "An error occured during auth cleanup");
         }
         finally
         {
             if (sender is IClassicDesktopStyleApplicationLifetime desktop)
-            {
                 desktop.Shutdown();
-            }
         }
     }
 }
